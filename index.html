@@ -139,8 +139,8 @@
 
     .wordmark {
       font-family: var(--font-heading);
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 2rem;
+      font-weight: 400;
       color: var(--text-primary);
       margin-bottom: 8px;
     }
@@ -162,9 +162,34 @@
     }
 
     .phase-wheel-welcome {
-      width: 200px;
-      height: 200px;
+      width: 220px;
+      height: 220px;
       margin: 0 auto 40px;
+      cursor: default;
+    }
+
+    .orb-cursor-follower {
+      position: fixed;
+      width: 160px;
+      height: 160px;
+      left: 0;
+      top: 0;
+      margin-left: -80px;
+      margin-top: -80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+        rgba(212, 192, 180, 0.35) 0%,
+        rgba(196, 176, 196, 0.2) 35%,
+        rgba(180, 192, 216, 0.12) 55%,
+        transparent 72%);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .orb-cursor-follower.visible {
+      opacity: 1;
     }
 
     .btn {
@@ -221,7 +246,7 @@
     .onboarding-title {
       font-family: var(--font-heading);
       font-size: 1.5rem;
-      font-weight: 700;
+      font-weight: 400;
       margin-bottom: 8px;
     }
 
@@ -238,7 +263,7 @@
     .form-group label {
       display: block;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 400;
       margin-bottom: 8px;
       color: var(--text-primary);
     }
@@ -262,7 +287,7 @@
     .cycle-label {
       display: block;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 400;
       margin-bottom: 12px;
       color: var(--text-primary);
     }
@@ -342,7 +367,7 @@
     .phase-name {
       font-family: var(--font-heading);
       font-size: 2rem;
-      font-weight: 700;
+      font-weight: 400;
       margin-bottom: 8px;
     }
 
@@ -385,7 +410,7 @@
     .insights-heading {
       font-family: var(--font-heading);
       font-size: 1.5rem;
-      font-weight: 700;
+      font-weight: 400;
       margin-bottom: 4px;
     }
 
@@ -424,7 +449,7 @@
     .card-title {
       font-family: var(--font-heading);
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 400;
       margin-bottom: 8px;
       color: var(--text-primary);
     }
@@ -463,6 +488,7 @@
   </style>
 </head>
 <body>
+  <div id="orb-cursor-follower" class="orb-cursor-follower" aria-hidden="true"></div>
   <div class="app">
     <!-- Screen 1: Welcome -->
     <section id="screen-welcome" class="screen active">
@@ -472,10 +498,19 @@
       <h1 class="wordmark">Your hormone-aware life compass</h1>
       <p class="sub-line">Design your life around your cycle.</p>
       <svg class="phase-wheel-welcome" viewBox="0 0 200 200" aria-hidden="true">
-        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-menstrual)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
-        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-follicular)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-141.37" transform="rotate(-90 100 100)" />
-        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-ovulatory)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-282.74" transform="rotate(-90 100 100)" />
-        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-luteal)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-424.11" transform="rotate(-90 100 100)" />
+        <defs>
+          <radialGradient id="wheel-orb" cx="50%" cy="45%" r="70%" fx="35%" fy="35%">
+            <stop offset="0%" stop-color="#D4C0B4" stop-opacity="0.95" />
+            <stop offset="35%" stop-color="#C4B0C4" stop-opacity="0.9" />
+            <stop offset="60%" stop-color="#B0C0D8" stop-opacity="0.88" />
+            <stop offset="85%" stop-color="#C4B8C4" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#D8D0C8" stop-opacity="0.55" />
+          </radialGradient>
+          <filter id="wheel-soften" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+          </filter>
+        </defs>
+        <circle id="welcome-orb" cx="100" cy="100" r="92" fill="url(#wheel-orb)" filter="url(#wheel-soften)" />
       </svg>
       <button type="button" class="btn" id="btn-begin">Let's begin</button>
     </section>
@@ -712,6 +747,11 @@
         var duration = options.duration !== undefined ? options.duration : 300;
         var delay = options.delay || 0;
 
+        if (currentScreenId === 'screen-welcome' && screenId !== 'screen-welcome') {
+          var f = document.getElementById('orb-cursor-follower');
+          if (f) f.classList.remove('visible');
+        }
+
         var allScreens = document.querySelectorAll('.screen');
         var next = document.getElementById(screenId);
         if (!next) return;
@@ -832,6 +872,62 @@
       document.getElementById('btn-begin').addEventListener('click', function() {
         showScreen('screen-onboarding');
       });
+
+      // ---------- Welcome orb: gradient follows mouse ----------
+      (function() {
+        var svg = document.querySelector('.phase-wheel-welcome');
+        var grad = document.getElementById('wheel-orb');
+        if (!svg || !grad) return;
+        var currentFx = 35;
+        var currentFy = 35;
+        var targetFx = 35;
+        var targetFy = 35;
+        var lerp = 0.14;
+
+        function setGradFocus(fx, fy) {
+          grad.setAttribute('fx', fx + '%');
+          grad.setAttribute('fy', fy + '%');
+        }
+
+        function tick() {
+          currentFx += (targetFx - currentFx) * lerp;
+          currentFy += (targetFy - currentFy) * lerp;
+          setGradFocus(currentFx, currentFy);
+          requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+
+        svg.addEventListener('mousemove', function(ev) {
+          var rect = svg.getBoundingClientRect();
+          var x = (ev.clientX - rect.left) / rect.width;
+          var y = (ev.clientY - rect.top) / rect.height;
+          targetFx = 20 + x * 60;
+          targetFy = 20 + y * 60;
+        });
+
+        svg.addEventListener('mouseleave', function() {
+          targetFx = 35;
+          targetFy = 35;
+        });
+
+        // Soft colour follower when cursor leaves the orb
+        var follower = document.getElementById('orb-cursor-follower');
+        if (follower) {
+          function moveFollower(ev) {
+            follower.style.left = ev.clientX + 'px';
+            follower.style.top = ev.clientY + 'px';
+          }
+          document.addEventListener('mousemove', moveFollower);
+          svg.addEventListener('mouseleave', function() {
+            follower.classList.add('visible');
+            var rect = svg.getBoundingClientRect();
+            moveFollower({ clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 });
+          });
+          svg.addEventListener('mouseenter', function() {
+            follower.classList.remove('visible');
+          });
+        }
+      })();
 
       document.querySelectorAll('.back-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
