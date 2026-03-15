@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lumah — Your hormone-aware life compass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital@0;1&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F5F0E8;
+      --card-bg: #FAF6F0;
+      --border: #E8DDD3;
+      --text-primary: #3D2E25;
+      --text-muted: #6B5E52;
+      --accent: #C4715A;
+      --phase-menstrual: #C4715A;
+      --phase-follicular: #7A9E7E;
+      --phase-ovulatory: #D4A843;
+      --phase-luteal: #9B7FA6;
+      --shadow: 0 2px 16px rgba(0,0,0,0.06);
+      --radius-button: 100px;
+      --radius-card: 16px;
+      --radius-input: 12px;
+      --font-heading: 'Playfair Display', serif;
+      --font-body: 'Lora', serif;
+      --max-width: 390px;
+      --transition-duration: 300ms;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 24px;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      min-height: 80vh;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .screen.leaving {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    /* ----- Screen 1: Welcome ----- */
+    #screen-welcome {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .wordmark {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .sub-line {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 32px;
+    }
+
+    .phase-wheel-welcome {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 40px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-button);
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: var(--shadow);
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--border);
+    }
+
+    /* ----- Screen 2: Onboarding ----- */
+    #screen-onboarding .back-row {
+      margin-bottom: 24px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .onboarding-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .onboarding-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-input);
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
+
+    .form-group input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .cycle-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .cycle-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cycle-pill {
+      padding: 12px 20px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-button);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .cycle-pill:hover {
+      border-color: var(--text-muted);
+    }
+
+    .cycle-pill.selected {
+      border-color: var(--accent);
+      background: rgba(196, 113, 90, 0.12);
+      color: var(--text-primary);
+    }
+
+    .reassurance {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin: 24px 0;
+      font-style: italic;
+    }
+
+    .error-msg {
+      color: #b94a48;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    .onboarding-cta {
+      margin-top: 32px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ----- Screen 3: Phase reveal ----- */
+    #screen-reveal .back-row {
+      margin-bottom: 16px;
+    }
+
+    .phase-reveal-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 24px;
+    }
+
+    .phase-label {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .phase-name {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .phase-name.menstrual { color: var(--phase-menstrual); }
+    .phase-name.follicular { color: var(--phase-follicular); }
+    .phase-name.ovulatory { color: var(--phase-ovulatory); }
+    .phase-name.luteal { color: var(--phase-luteal); }
+    .phase-name.new_cycle,
+.phase-name.new-cycle { color: var(--text-muted); }
+
+    .day-count {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .phase-arc-wrap {
+      width: 220px;
+      height: 220px;
+      margin-bottom: 32px;
+    }
+
+    .hormone-context {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      max-width: 320px;
+      margin-bottom: 40px;
+    }
+
+    .reveal-cta {
+      margin-top: auto;
+    }
+
+    /* ----- Screen 4: Insight cards ----- */
+    #screen-insights .back-row {
+      margin-bottom: 16px;
+    }
+
+    .insights-heading {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .insights-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .cards-scroll {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 24px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .insight-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .insight-card.card-reframe {
+      color: white;
+      border: none;
+    }
+
+    .insight-card.card-reframe .card-title,
+    .insight-card.card-reframe .card-body {
+      color: white;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card-body {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-primary);
+    }
+
+    .insight-card.card-reframe .card-body {
+      opacity: 0.95;
+    }
+
+    .checkin-row {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .checkin-confirm {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .checkin-confirm.visible {
+      display: block;
+    }
+
+    .insights-foot-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Screen 1: Welcome -->
+    <section id="screen-welcome" class="screen active">
+      <h1 class="wordmark">Lumah</h1>
+      <p class="tagline">Your hormone-aware life compass.</p>
+      <p class="sub-line">Design your life around your cycle.</p>
+      <svg class="phase-wheel-welcome" viewBox="0 0 200 200" aria-hidden="true">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-menstrual)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-follicular)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-141.37" transform="rotate(-90 100 100)" />
+        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-ovulatory)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-282.74" transform="rotate(-90 100 100)" />
+        <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-luteal)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="-424.11" transform="rotate(-90 100 100)" />
+      </svg>
+      <button type="button" class="btn" id="btn-begin">Let's begin</button>
+    </section>
+
+    <!-- Screen 2: Onboarding -->
+    <section id="screen-onboarding" class="screen">
+      <div class="back-row">
+        <button type="button" class="back-btn" data-back="screen-welcome" aria-label="Back">← Back</button>
+      </div>
+      <h2 class="onboarding-title">When did your last period start?</h2>
+      <p class="onboarding-sub">We'll use this to show you where you are in your cycle.</p>
+      <form id="onboarding-form">
+        <div class="form-group">
+          <label for="period-start">First day of last period</label>
+          <input type="date" id="period-start" required>
+          <p class="error-msg" id="error-future-date">That date is in the future. Please enter the start of your last period.</p>
+        </div>
+        <div class="form-group">
+          <span class="cycle-label">Typical cycle length (days)</span>
+          <div class="cycle-pills" role="group" aria-label="Cycle length">
+            <button type="button" class="cycle-pill" data-length="21">21</button>
+            <button type="button" class="cycle-pill" data-length="25">25</button>
+            <button type="button" class="cycle-pill selected" data-length="28">28</button>
+            <button type="button" class="cycle-pill" data-length="30">30</button>
+            <button type="button" class="cycle-pill" data-length="35">35+</button>
+          </div>
+        </div>
+        <p class="reassurance">This is just for you. We don't save anything to a server — it stays on your device.</p>
+        <p class="error-msg" id="error-general"></p>
+        <div class="onboarding-cta">
+          <button type="submit" class="btn" id="btn-show-phase">Show me my phase →</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Screen 3: Phase reveal -->
+    <section id="screen-reveal" class="screen">
+      <div class="back-row">
+        <button type="button" class="back-btn" data-back="screen-onboarding" aria-label="Back">← Back</button>
+      </div>
+      <div class="phase-reveal-content">
+        <p class="phase-label" id="reveal-phase-label">Today you're in your</p>
+        <h2 class="phase-name" id="reveal-phase-name">Luteal</h2>
+        <p class="day-count" id="reveal-day-count">Day 4 of 12</p>
+        <div class="phase-arc-wrap" id="phase-arc-container" aria-hidden="true"></div>
+        <p class="hormone-context" id="reveal-hormone-context"></p>
+        <button type="button" class="btn reveal-cta" id="btn-see-insights">See your insights →</button>
+      </div>
+    </section>
+
+    <!-- Screen 4: Insight cards -->
+    <section id="screen-insights" class="screen">
+      <div class="back-row">
+        <button type="button" class="back-btn" data-back="screen-reveal" aria-label="Back">← Back</button>
+      </div>
+      <h2 class="insights-heading">Your insights</h2>
+      <p class="insights-sub" id="insights-sub-label">Luteal · Day 4</p>
+      <div class="cards-scroll">
+        <div class="insight-card" id="card-daily">
+          <h3 class="card-title" id="card-daily-title"></h3>
+          <p class="card-body" id="card-daily-body"></p>
+        </div>
+        <div class="insight-card" id="card-work">
+          <h3 class="card-title" id="card-work-title"></h3>
+          <p class="card-body" id="card-work-body"></p>
+        </div>
+        <div class="insight-card card-reframe" id="card-reframe">
+          <h3 class="card-title" id="card-reframe-title"></h3>
+          <p class="card-body" id="card-reframe-body"></p>
+        </div>
+      </div>
+      <div class="checkin-row">
+        <p class="checkin-confirm" id="checkin-confirm">✓ See you tomorrow</p>
+        <button type="button" class="btn" id="btn-checkin">Check in tomorrow →</button>
+      </div>
+      <p class="insights-foot-note">Come back each day for updated insights.</p>
+    </section>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ---------- Design tokens (phase colours for JS) ----------
+      var PHASE_COLORS = {
+        menstrual: '#C4715A',
+        follicular: '#7A9E7E',
+        ovulatory: '#D4A843',
+        luteal: '#9B7FA6',
+        new_cycle: '#6B5E52'
+      };
+
+      // ---------- Phase copy (single data structure) ----------
+      var PHASE_COPY = {
+        menstrual: {
+          hormoneParagraph: 'Estrogen and progesterone are at their lowest. Your body is shedding the uterine lining. It\'s normal to feel lower energy or want more rest — honour that. This is a natural reset.',
+          cards: {
+            daily: { title: 'Rest is productive', body: 'Your body is doing important work. Gentle movement, warmth, and permission to slow down are exactly what this phase asks for.' },
+            workLife: { title: 'Protect your energy', body: 'If you can, avoid scheduling big decisions or confrontations today. Save your clarity for when you feel resourced.' },
+            reframe: { title: 'You\'re not broken', body: 'This phase is part of the design. Let yourself be where you are.' }
+          }
+        },
+        follicular: {
+          hormoneParagraph: 'Estrogen is rising. Energy and mood often lift. You might feel more social, curious, and ready to start new things. This is a great time for ideas and taking small steps.',
+          cards: {
+            daily: { title: 'Lean into curiosity', body: 'Your brain is primed for learning and exploration. Try something new or revisit a project you\'ve put aside.' },
+            workLife: { title: 'Good time to initiate', body: 'You\'re likely feeling more confident and communicative. Use this window for conversations that matter.' },
+            reframe: { title: 'Your energy is returning', body: 'Trust the lift. It\'s not random — it\'s your cycle supporting you.' }
+          }
+        },
+        ovulatory: {
+          hormoneParagraph: 'Estrogen peaks and testosterone rises. Many people feel at their most confident, articulate, and magnetic. A natural high point for connection and getting things done.',
+          cards: {
+            daily: { title: 'Peak clarity', body: 'You may feel sharp and decisive. Use this phase for decisions and conversations that need your full presence.' },
+            workLife: { title: 'Show up and be seen', body: 'This is your window to lead, present, or ask for what you want. Your energy is visible.' },
+            reframe: { title: 'You\'re in your power', body: 'This isn\'t arrogance — it\'s your body and mind in sync. Own it.' }
+          }
+        },
+        luteal: {
+          hormoneParagraph: 'Progesterone rises; estrogen dips then rises again. You might feel more inward, sensitive, or tired. This is a time for detail, reflection, and boundary-setting — not for pushing through like it\'s ovulatory week.',
+          cards: {
+            daily: { title: 'Detail and reflection', body: 'Your brain may be better at spotting what\'s wrong or what needs care. Use that for planning, not for criticising yourself.' },
+            workLife: { title: 'Boundaries over hustle', body: 'Saying no and protecting your energy is productive. You don\'t have to perform at peak every day.' },
+            reframe: { title: 'Sensitivity is data', body: 'What bothers you in this phase often points to what actually matters. Listen to it.' }
+          }
+        },
+        new_cycle: {
+          hormoneParagraph: 'Your new cycle is about to start. Rest and listen to your body. There\'s no need to do anything except be kind to yourself.',
+          cards: {
+            daily: { title: 'Rest and reset', body: 'You\'re between cycles. Gentle rest and light nourishment support what comes next.' },
+            workLife: { title: 'Pause if you can', body: 'This is a natural pause. If you can avoid stacking big commitments, give yourself that grace.' },
+            reframe: { title: 'You\'re exactly where you need to be', body: 'Cycles don\'t need to be forced. Let this one close with care.' }
+          }
+        }
+      };
+
+      // Phase bands: [startDay inclusive, endDay inclusive] -> phase key
+      var PHASE_BANDS = [
+        { start: 0, end: 5, phase: 'menstrual' },
+        { start: 6, end: 13, phase: 'follicular' },
+        { start: 14, end: 17, phase: 'ovulatory' },
+        { start: 18, end: -1, phase: 'luteal' }
+      ];
+
+      function getPhaseStartDay(phaseKey) {
+        var band = PHASE_BANDS.find(function(b) { return b.phase === phaseKey; });
+        return band ? band.start : 0;
+      }
+
+      function getPhaseEndDay(phaseKey, cycleLength) {
+        var band = PHASE_BANDS.find(function(b) { return b.phase === phaseKey; });
+        if (!band) return 1;
+        if (band.end === -1) return cycleLength - 1;
+        return band.end;
+      }
+
+      function getTotalDaysInPhase(phaseKey, cycleLength) {
+        var start = getPhaseStartDay(phaseKey);
+        var end = getPhaseEndDay(phaseKey, cycleLength);
+        return end - start + 1;
+      }
+
+      // ---------- Phase calculation ----------
+      function toDateOnly(d) {
+        var date = new Date(d);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+
+      function calculatePhase(periodStart, cycleLength, today) {
+        var start = toDateOnly(periodStart);
+        var t = toDateOnly(today || new Date());
+        var ms = t.getTime() - start.getTime();
+        var daysSincePeriod = Math.floor(ms / 86400000);
+
+        if (daysSincePeriod < 0) {
+          return { phase: null, dayOfPhase: 0, daysSincePeriod: daysSincePeriod, totalInPhase: 0 };
+        }
+
+        if (daysSincePeriod >= cycleLength) {
+          return { phase: 'new_cycle', dayOfPhase: 1, daysSincePeriod: daysSincePeriod, totalInPhase: 1 };
+        }
+
+        var phaseKey = 'luteal';
+        for (var i = 0; i < PHASE_BANDS.length; i++) {
+          var b = PHASE_BANDS[i];
+          var end = b.end === -1 ? cycleLength - 1 : b.end;
+          if (daysSincePeriod >= b.start && daysSincePeriod <= end) {
+            phaseKey = b.phase;
+            break;
+          }
+        }
+
+        var phaseStart = getPhaseStartDay(phaseKey);
+        var dayOfPhase = daysSincePeriod - phaseStart + 1;
+        var totalInPhase = getTotalDaysInPhase(phaseKey, cycleLength);
+
+        return { phase: phaseKey, dayOfPhase: dayOfPhase, daysSincePeriod: daysSincePeriod, totalInPhase: totalInPhase };
+      }
+
+      function phaseDisplayName(key) {
+        var names = { menstrual: 'Menstrual', follicular: 'Follicular', ovulatory: 'Ovulatory', luteal: 'Luteal', new_cycle: 'New cycle starting soon' };
+        return names[key] || key;
+      }
+
+      // ---------- Storage ----------
+      var STORAGE_KEYS = {
+        period_start: 'lumah_period_start',
+        cycle_length: 'lumah_cycle_length',
+        phase: 'lumah_phase',
+        day_of_phase: 'lumah_day_of_phase',
+        last_checkin: 'lumah_last_checkin'
+      };
+
+      function storageGet(key) {
+        try {
+          return localStorage.getItem(STORAGE_KEYS[key] || key);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function storageSet(key, value) {
+        try {
+          localStorage.setItem(STORAGE_KEYS[key] || key, String(value));
+        } catch (e) {}
+      }
+
+      // ---------- Screen state ----------
+      var currentScreenId = 'screen-welcome';
+
+      function showScreen(screenId, options) {
+        options = options || {};
+        var duration = options.duration !== undefined ? options.duration : 300;
+        var delay = options.delay || 0;
+
+        var allScreens = document.querySelectorAll('.screen');
+        var next = document.getElementById(screenId);
+        if (!next) return;
+
+        function doShow() {
+          allScreens.forEach(function(el) {
+            el.classList.remove('active', 'leaving');
+          });
+          next.classList.add('active');
+          currentScreenId = screenId;
+
+          if (screenId === 'screen-reveal') {
+            renderPhaseReveal();
+          } else if (screenId === 'screen-insights') {
+            renderInsightCards();
+            updateCheckinState();
+          }
+        }
+
+        var current = document.querySelector('.screen.active');
+        if (current && current !== next) {
+          current.classList.add('leaving');
+          setTimeout(function() {
+            if (delay > 0) {
+              setTimeout(doShow, delay);
+            } else {
+              doShow();
+            }
+          }, duration);
+        } else {
+          if (delay > 0) setTimeout(doShow, delay);
+          else doShow();
+        }
+      }
+
+      function renderPhaseReveal() {
+        var periodStart = storageGet('period_start');
+        var cycleLength = parseInt(storageGet('cycle_length'), 10) || 28;
+        if (!periodStart) return;
+
+        var result = calculatePhase(periodStart, cycleLength, new Date());
+        var phaseKey = result.phase;
+        if (!phaseKey) return;
+
+        var phaseNameEl = document.getElementById('reveal-phase-name');
+        var dayCountEl = document.getElementById('reveal-day-count');
+        var hormoneEl = document.getElementById('reveal-hormone-context');
+        var arcContainer = document.getElementById('phase-arc-container');
+
+        phaseNameEl.textContent = phaseDisplayName(phaseKey);
+        phaseNameEl.className = 'phase-name ' + phaseKey.replace('_', '-');
+        if (phaseKey === 'new_cycle') {
+          dayCountEl.textContent = '';
+        } else {
+          dayCountEl.textContent = 'Day ' + result.dayOfPhase + ' of ' + result.totalInPhase;
+        }
+        var copy = PHASE_COPY[phaseKey];
+        hormoneEl.textContent = copy ? copy.hormoneParagraph : '';
+
+        // Phase arc SVG: single arc, sweep = dayOfPhase / totalInPhase
+        var total = result.totalInPhase || 1;
+        var day = result.dayOfPhase || 1;
+        var sweepRatio = Math.min(1, day / total);
+        var circumference = 2 * Math.PI * 90;
+        var strokeDash = circumference * sweepRatio;
+        var color = PHASE_COLORS[phaseKey] || PHASE_COLORS.luteal;
+
+        arcContainer.innerHTML = '<svg viewBox="0 0 220 220" width="220" height="220"><circle cx="110" cy="110" r="90" fill="none" stroke="' + color + '" stroke-width="20" stroke-dasharray="' + strokeDash + ' ' + circumference + '" stroke-dashoffset="0" transform="rotate(-90 110 110)" stroke-linecap="round"/></svg>';
+      }
+
+      function renderInsightCards() {
+        var phaseKey = storageGet('phase') || '';
+        var dayOfPhase = storageGet('day_of_phase') || '1';
+        var copy = PHASE_COPY[phaseKey];
+        if (!copy || !copy.cards) return;
+
+        document.getElementById('insights-sub-label').textContent = phaseDisplayName(phaseKey) + ' · Day ' + dayOfPhase;
+
+        var daily = copy.cards.daily;
+        var work = copy.cards.workLife;
+        var reframe = copy.cards.reframe;
+
+        document.getElementById('card-daily-title').textContent = daily.title;
+        document.getElementById('card-daily-body').textContent = daily.body;
+        document.getElementById('card-work-title').textContent = work.title;
+        document.getElementById('card-work-body').textContent = work.body;
+        document.getElementById('card-reframe-title').textContent = reframe.title;
+        document.getElementById('card-reframe-body').textContent = reframe.body;
+
+        var reframeCard = document.getElementById('card-reframe');
+        reframeCard.style.background = PHASE_COLORS[phaseKey] || PHASE_COLORS.luteal;
+      }
+
+      // ---------- Init: returning user ----------
+      function initFromStorage() {
+        var periodStart = storageGet('period_start');
+        var cycleLength = parseInt(storageGet('cycle_length'), 10) || 28;
+        if (periodStart) {
+          var result = calculatePhase(periodStart, cycleLength, new Date());
+          storageSet('phase', result.phase || '');
+          storageSet('day_of_phase', result.dayOfPhase);
+          showScreen('screen-reveal');
+          return;
+        }
+        showScreen('screen-welcome');
+      }
+
+      // ---------- Default date: today - 14 ----------
+      function setDefaultPeriodInput() {
+        var input = document.getElementById('period-start');
+        if (!input || input.value) return;
+        var d = new Date();
+        d.setDate(d.getDate() - 14);
+        input.value = d.toISOString().slice(0, 10);
+      }
+
+      // ---------- Event listeners ----------
+      document.getElementById('btn-begin').addEventListener('click', function() {
+        showScreen('screen-onboarding');
+      });
+
+      document.querySelectorAll('.back-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = btn.getAttribute('data-back');
+          if (target) showScreen(target);
+        });
+      });
+
+      document.querySelectorAll('.cycle-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          document.querySelectorAll('.cycle-pill').forEach(function(p) { p.classList.remove('selected'); });
+          pill.classList.add('selected');
+        });
+      });
+
+      document.getElementById('onboarding-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var dateInput = document.getElementById('period-start');
+        var periodStart = dateInput.value;
+        var selectedPill = document.querySelector('.cycle-pill.selected');
+        var cycleLength = selectedPill ? parseInt(selectedPill.getAttribute('data-length'), 10) : 28;
+
+        var result = calculatePhase(periodStart, cycleLength, new Date());
+        var errFuture = document.getElementById('error-future-date');
+        var errGeneral = document.getElementById('error-general');
+        errFuture.classList.remove('visible');
+        errGeneral.classList.remove('visible');
+        errGeneral.textContent = '';
+
+        if (result.daysSincePeriod < 0) {
+          errFuture.classList.add('visible');
+          return;
+        }
+
+        storageSet('period_start', periodStart);
+        storageSet('cycle_length', cycleLength);
+        storageSet('phase', result.phase || '');
+        storageSet('day_of_phase', result.dayOfPhase);
+
+        showScreen('screen-reveal', { delay: 350 });
+      });
+
+      document.getElementById('btn-see-insights').addEventListener('click', function() {
+        showScreen('screen-insights');
+      });
+
+      function updateCheckinState() {
+        var today = new Date().toISOString().slice(0, 10);
+        var last = storageGet('last_checkin');
+        var btn = document.getElementById('btn-checkin');
+        var confirm = document.getElementById('checkin-confirm');
+        if (last === today) {
+          btn.style.display = 'none';
+          confirm.classList.add('visible');
+        } else {
+          btn.style.display = '';
+          confirm.classList.remove('visible');
+        }
+      }
+
+      document.getElementById('btn-checkin').addEventListener('click', function() {
+        var today = new Date().toISOString().slice(0, 10);
+        storageSet('last_checkin', today);
+        updateCheckinState();
+      });
+
+      setDefaultPeriodInput();
+      initFromStorage();
+      updateCheckinState();
+    })();
+  </script>
+</body>
+</html>
