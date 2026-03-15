@@ -4,10 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Lumah — Your hormone-aware life compass</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital@0;1&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-RegularItalic.otf') format('opentype');
+      font-weight: 400;
+      font-style: italic;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-MediumItalic.otf') format('opentype');
+      font-weight: 500;
+      font-style: italic;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-Semibold.otf') format('opentype');
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-SemiboldItalic.otf') format('opentype');
+      font-weight: 600;
+      font-style: italic;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-Bold.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Tiempos Text';
+      src: url('fonts/TestTiemposText-BoldItalic.otf') format('opentype');
+      font-weight: 700;
+      font-style: italic;
+    }
+
     :root {
       --bg: #F5F0E8;
       --card-bg: #FAF6F0;
@@ -23,8 +69,8 @@
       --radius-button: 100px;
       --radius-card: 16px;
       --radius-input: 12px;
-      --font-heading: 'Playfair Display', serif;
-      --font-body: 'Lora', serif;
+      --font-heading: 'Tiempos Text', serif;
+      --font-body: 'Tiempos Text', serif;
       --max-width: 390px;
       --transition-duration: 300ms;
     }
@@ -77,6 +123,18 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+    }
+
+    .logo {
+      width: 100%;
+      max-width: 260px;
+      height: auto;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .logo path {
+      fill: currentColor;
     }
 
     .wordmark {
@@ -408,7 +466,10 @@
   <div class="app">
     <!-- Screen 1: Welcome -->
     <section id="screen-welcome" class="screen active">
-      <h1 class="wordmark">Lumah — Your hormone-aware life compass</h1>
+      <svg class="logo" viewBox="0 0 513 202" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M116.956 79.7272V129.921C116.956 135.31 119.85 136.707 126.735 136.707H132.623C141.105 136.707 144.398 130.919 149.787 120.541H152.281L149.088 140H98.7941V137.306C106.179 136.408 107.576 135.909 107.576 130.221V79.7272C107.576 74.0392 106.179 73.5402 98.7941 72.6421V69.9478H125.737V72.6421C118.353 73.5402 116.956 74.0392 116.956 79.7272ZM200.782 97.7891V130.32C200.782 133.713 200.982 134.412 205.472 134.911L208.067 135.21V137.306L192.998 140.998H191.502L191.901 131.618C187.111 136.408 181.822 140.998 174.837 140.998C166.255 140.998 161.166 136.308 161.166 125.431V97.7891C161.166 94.1966 160.367 93.1987 155.677 92.6L154.081 92.4004V90.1053L169.448 87.3112H170.546L170.047 98.1882V123.635C170.047 130.919 172.741 135.11 178.928 135.11C184.117 135.11 188.109 132.416 191.901 129.422V97.7891C191.901 94.1966 191.202 93.1987 186.412 92.6L184.916 92.4004V90.1053L200.084 87.3112H201.181L200.782 97.7891ZM278.793 132.416V103.377C278.793 96.1924 276.299 92.8994 270.411 92.8994C265.322 92.8994 261.23 95.6935 257.438 98.9865V132.416C257.438 136.308 259.035 137.106 264.324 137.405V140H241.572V137.405C246.861 137.106 248.457 136.308 248.457 132.416V103.377C248.457 96.1924 245.963 92.8994 240.075 92.8994C234.986 92.8994 230.894 95.6935 227.102 98.9865V132.416C227.102 136.308 228.699 137.106 233.988 137.405V140H211.236V137.405C216.525 137.106 218.121 136.308 218.121 132.416V96.6914L211.635 93.1987V92.1011L226.304 87.1116H227.501L227.102 96.5916C231.792 91.4025 236.782 87.1116 244.665 87.1116C251.651 87.1116 255.443 90.3048 256.84 96.8909C261.53 91.7019 267.118 87.1116 275.001 87.1116C283.982 87.1116 287.774 92.6998 287.774 103.477V132.416C287.774 136.308 289.371 137.106 294.66 137.405V140H271.908V137.405C277.197 137.106 278.793 136.308 278.793 132.416ZM311.638 134.711C319.521 134.711 330.199 119.643 336.486 94.9949C335.089 91.8017 332.195 89.9057 328.702 89.9057C317.027 89.9057 306.848 108.666 306.848 126.429C306.848 131.618 308.445 134.711 311.638 134.711ZM327.006 134.212C327.006 131.219 329.001 122.537 330.897 117.248C325.209 129.821 316.328 140.998 308.445 140.998C301.759 140.998 298.166 135.41 298.166 126.429C298.166 105.373 313.833 87.1116 328.203 87.1116C332.594 87.1116 335.388 88.4088 338.082 91.1032L345.267 86.3133H347.263L343.77 97.4897L336.286 128.424C335.787 130.32 335.388 132.017 335.388 132.815C335.388 133.813 335.887 134.312 336.785 134.312C338.681 134.312 341.276 132.316 345.766 126.828L347.263 127.925C341.176 137.006 337.384 140.998 332.694 140.998C328.902 140.998 327.006 138.304 327.006 134.212ZM378.902 61.8648L366.129 111.859C371.518 101.88 382.994 87.1116 392.673 87.1116C397.563 87.1116 399.06 89.8059 399.06 94.1966C399.06 95.4939 398.76 97.2901 398.461 98.5874L390.578 128.424C390.079 130.32 389.68 132.017 389.68 132.815C389.68 133.813 390.179 134.312 391.077 134.312C392.973 134.312 395.567 132.316 400.058 126.828L401.555 127.925C395.467 137.006 391.675 140.998 386.985 140.998C383.193 140.998 381.098 138.304 381.098 134.212C381.098 131.917 381.497 129.422 382.495 125.63L389.879 98.1882C390.179 96.8909 390.378 95.6935 390.378 94.8952C390.378 93.4981 389.879 92.7996 388.582 92.7996C382.395 92.7996 367.526 107.269 363.036 125.531L359.443 140H350.762L368.225 70.1474L361.439 66.9541L361.739 65.7566L377.904 61.8648H378.902ZM405.568 134.112C405.568 130.32 408.661 127.227 412.453 127.227C416.245 127.227 419.339 130.32 419.339 134.112C419.339 137.904 416.245 140.998 412.453 140.998C408.661 140.998 405.568 137.904 405.568 134.112Z" fill="currentColor"/>
+      </svg>
+      <h1 class="wordmark">Your hormone-aware life compass</h1>
       <p class="sub-line">Design your life around your cycle.</p>
       <svg class="phase-wheel-welcome" viewBox="0 0 200 200" aria-hidden="true">
         <circle cx="100" cy="100" r="90" fill="none" stroke="var(--phase-menstrual)" stroke-width="24" stroke-dasharray="141.37 424.12" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
